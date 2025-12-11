@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Terminal 8 - FORGOTTEN News</title>
+
+<style>
+/* === Font - VCR OSD Mono (local file vcr.ttf) === */
+@font-face {
+  font-family: "VCR";
+  src: url("vcr.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* === Reset / base === */
+:root{
+  --bg: #000;
+  --text: #eaeaea;
+  --cyan: #36c7ff;
+  --yellow: #ffea00;
+  --title-size: 56px;
+  --mono: "VCR", "VCR OSD Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+html,body { height:100%; margin:0; background:var(--bg); color:var(--text); font-family:var(--mono); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+
+/* === Page layout grid === */
+.page {
+  min-height:100vh;
+  padding: 36px 48px;
+  display: grid;
+  grid-template-columns: 1fr 380px; /* left content, right image */
+  gap: 28px;
+  align-items: start;
+  position: relative;
+  z-index: 10010; /* keep above RGB ghosts */
+  transform: scale(1.02);
+  transform-origin: center;
+  perspective: 1200px;
+}
+
+/* === Title row (keeps left-aligned) === */
+.title {
+  grid-column: 1 / span 1;
+  font-size: var(--title-size);
+  letter-spacing: 2px;
+  margin: 12px 0 24px 0;
+  display: block;
+  color: var(--text);
+}
+
+/* arrows like the mockup */
+.title .left, .title .right {
+  font-size: 0.8em;
+  opacity: 0.95;
+  vertical-align: middle;
+  margin: 0 12px;
+}
+
+/* subtitle / small note under title */
+.subtitle {
+  font-size: 18px;
+  margin: 4px 0 18px 0;
+  color: var(--text);
+}
+
+/* the top short description with chevron bullet */
+.chev {
+  margin: 8px 0 26px 0;
+  display:inline-block;
+  font-size:18px;
+  color: var(--text);
+}
+
+/* main body left column content stack */
+.left-block {
+  grid-column: 1 / 2;
+  display:flex;
+  flex-direction:column;
+  gap: 18px;
+}
+
+/* paragraph block that uses bracket style like draft */
+.note-block {
+  color: var(--text);
+  font-size:20px;
+  line-height:1.6;
+  max-width:900px;
+  white-space: normal;
+}
+
+/* blue highlighted news line block */
+.news-line {
+  color: var(--cyan);
+  font-size: 22px;
+  line-height: 1.5;
+  margin-top: 24px;
+  max-width: 900px;
+  word-wrap: break-word;
+  letter-spacing: 1px;
+}
+
+/* yellow fun-fact block */
+.fun-fact {
+  color: var(--yellow);
+  font-size: 18px;
+  line-height: 1.5;
+  max-width: 900px;
+  margin-top: 28px;
+  text-transform: none;
+}
+
+/* Right column image area */
+.right-image {
+  grid-column: 2 / 3;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding-left: 12px;
+  padding-top: 40px; /* approximate placement to match draft */
+}
+.right-image img {
+  width: 320px;
+  height: auto;
+  border: 2px solid #222;
+  box-shadow: 0 6px 40px rgba(0,0,0,0.7), 0 0 0 3px rgba(255,255,255,0.02) inset;
+  object-fit: cover;
+}
+
+/* subtle underside spacing for lower content (if present) */
+.bottom-gap { grid-column: 1 / -1; height: 60px; }
+
+/* =========================
+   CHROMATIC ABERRATION
+   =========================
+   Stronger but safe: ghosts sit underneath content using mix-blend-mode: screen
+*/
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9990;
+  mix-blend-mode: screen;
+  opacity: 0.18;
+  filter: blur(1.5px) saturate(110%);
+}
+
+/* blue left */
+body::before {
+  background: linear-gradient(90deg, rgba(0,160,255,0.18) 0%, rgba(0,0,0,0.0) 40%);
+  transform: translateX(-4px);
+}
+
+/* red right */
+body::after {
+  background: linear-gradient(90deg, rgba(255,60,60,0.16) 60%, rgba(0,0,0,0.0) 100%);
+  transform: translateX(4px);
+}
+
+/* content layering: ensure page remains above aberration visuals */
+.page { z-index: 10010; }
+
+/* =========================
+   CURVED 'GLASS' REFLECTION
+   ========================= */
+.glass-reflection {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9992;
+  background: radial-gradient(1200px 400px at 40% 6%, rgba(255,255,255,0.035), rgba(255,255,255,0.01) 6%, rgba(255,255,255,0.004) 12%, transparent 25%),
+              linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0) 20%);
+  mix-blend-mode: overlay;
+  transform: translateZ(0) scale(1.02) perspective(900px) rotateX(1deg);
+}
+
+/* =========================
+   CRT SCANLINES + STUTTER
+   ========================= */
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9995;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.03) 0px,
+      rgba(255,255,255,0.03) 1px,
+      rgba(0,0,0,0) 2px,
+      rgba(0,0,0,0) 4px
+    );
+  animation: flicker 0.12s infinite alternate;
+  opacity: 0.9;
+}
+
+/* subtle scanline movement to mimic horizontal drift */
+@keyframes flicker {
+  0% { opacity: 0.7; transform: translateY(0px); }
+  50% { opacity: 0.88; transform: translateY(0.5px); }
+  100% { opacity: 0.8; transform: translateY(0px); }
+}
+
+/* stutter effect class - stronger flicker for short bursts */
+.crt-overlay.stutter {
+  animation: stutterAnim 0.04s steps(1) 6;
+  opacity: 1;
+}
+@keyframes stutterAnim {
+  0% { opacity: 1; transform: translateY(0); }
+  25% { opacity: 0.3; transform: translateY(-1px); }
+  50% { opacity: 0.9; transform: translateY(1px); }
+  75% { opacity: 0.25; transform: translateY(-0.5px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* small responsiveness */
+@media (max-width: 950px) {
+  .page { grid-template-columns: 1fr; padding: 28px; }
+  .right-image { order: 2; padding-top: 12px; justify-content:flex-start; }
+  .title { font-size: 40px; }
+  .news-line { font-size:18px; }
+}
+
+/* tiny polish: link-like underline on the 'somewhat' word in subtitle */
+.underline { text-decoration: underline dotted; text-decoration-color: rgba(255,255,255,0.4); }
+</style>
+</head>
+<body>
+
+<!-- RGB ghosts (body::before & body::after) live behind the page but above background.
+     glass-reflection sits above chroma but below scanlines so it reads like curved glass. -->
+<div class="glass-reflection" aria-hidden="true"></div>
+<div class="crt-overlay" id="crtOverlay" aria-hidden="true"></div>
+
+<!-- MAIN PAGE GRID -->
+<main class="page" role="main">
+
+  <!-- LEFT column content -->
+  <div class="left-block">
+    <div>
+      <span class="title"><span class="left">&lt;</span> Terminal 8 - FORGOTTEN News <span class="right">&gt;</span></span>
+      <div class="subtitle">
+        &gt; Used to give <span class="underline">somewhat</span> frequent updates on FORGOTTEN's<br>
+        Steam port, F:LSD; ihy, OG PowerPoint Port, and I2.
+      </div>
+    </div>
+
+    <div class="note-block">
+      ] NOTE: News is updated weekly every Thursday. The news itself is in blue text, and<br>
+      is usually accompanied by some extra yellow text, and an image. [
+    </div>
+
+    <div class="news-line">
+      [ 12/12/2025 ] - 88shard88: "cloth sketchbook page is done for all of you cloth enjoyers out there"
+    </div>
+
+    <div class="fun-fact">
+      fun fact cloth is too short to use some of the manor's older terminals. slightly related, I think they would<br>
+      like OG PowerPoint Port if they played it.
+    </div>
+  </div>
+
+  <!-- RIGHT column image - use your image file name here -->
+  <aside class="right-image" aria-label="Illustration">
+    <img src="cloth.jpg" alt="sketchbook image placeholder">
+  </aside>
+
+  <div class="bottom-gap" aria-hidden="true"></div>
+</main>
+
+<script>
+/* CRT stutter: randomly trigger 'stutter' class for short bursts to simulate CRT mis-sync.
+   This intentionally uses random intervals (2s - 10s) and short durations (200-500ms).
+*/
+(function(){
+  const overlay = document.getElementById('crtOverlay');
+
+  function doStutter() {
+    if (!overlay) return;
+    overlay.classList.add('stutter');
+    // remove after short time slightly longer than animation to ensure cleanup
+    setTimeout(()=> overlay.classList.remove('stutter'), 500);
+    // schedule next stutter randomly between 2000ms and 9000ms
+    scheduleNext();
+  }
+
+  function scheduleNext() {
+    const delay = 2000 + Math.random() * 7000;
+    setTimeout(doStutter, delay);
+  }
+
+  // gentle initial delay
+  setTimeout(scheduleNext, 1500);
+})();
+
+/* Safety note: Chromatic aberration uses body pseudo-elements with low opacity and mix-blend-mode: screen.
+   .page has a high z-index so text and images stay clearly readable.
+*/
+</script>
+</body>
+</html>
