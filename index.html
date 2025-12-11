@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>88shard88 - About Me</title>
+
+    <style>
+        @font-face {
+            font-family: 'VCR';
+            src: url('vcr.ttf') format('truetype');
+        }
+
+        body {
+            margin: 0;
+            padding: 40px;
+            background-color: black;
+            color: white;
+            font-family: 'VCR', monospace;
+            font-size: 20px;
+            letter-spacing: 1px;
+            position: relative;
+            overflow-x: hidden;
+
+            /* Light curvature */
+            transform: scale(1.02);
+            transform-origin: center;
+            perspective: 1200px;
+        }
+
+        /* ------------------------------------ */
+        /*   CHROMATIC ABERRATION (RGB SPLIT)   */
+        /* ------------------------------------ */
+
+        /* Blue ghost */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 9995;
+            pointer-events: none;
+            mix-blend-mode: screen;
+
+            filter: blur(1px);
+            transform: translateX(-2px);
+            background: rgba(0,150,255,0.12);
+        }
+
+        /* Red ghost */
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 9994;
+            pointer-events: none;
+            mix-blend-mode: screen;
+
+            filter: blur(1px);
+            transform: translateX(2px);
+            background: rgba(255,60,60,0.12);
+        }
+
+        /* ------------------------------------ */
+        /*         SCREEN CURVE VIGNETTE        */
+        /* ------------------------------------ */
+        .curve-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9993;
+
+            background: radial-gradient(
+                circle at center,
+                rgba(0,0,0,0) 60%,
+                rgba(0,0,0,0.25) 90%
+            );
+
+            transform:
+                translateZ(0)
+                scale(1.03)
+                perspective(900px)
+                rotateX(1.8deg)
+                rotateY(-1.8deg);
+        }
+
+        .content {
+            max-width: 1200px;
+            margin-left: 40px;
+            position: relative;
+            z-index: 1; /* Keep text above RGB ghosts */
+        }
+
+        img.pfp {
+            width: 260px;
+            border: 2px solid white;
+            margin-left: 420px;
+            margin-top: -40px;
+        }
+
+        .line {
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+
+        .block-text {
+            max-width: 900px;
+            line-height: 1.6;
+            white-space: normal;
+        }
+
+        .music-button {
+            width: 350px;
+            height: 120px;
+            border: 2px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            cursor: pointer;
+            margin-top: 40px;
+            margin-left: 100px;
+            transition: background-color 0.2s;
+        }
+
+        .music-button:hover {
+            background-color: #222;
+        }
+
+        footer {
+            color: white;
+            margin-top: 120px;
+            text-align: right;
+            font-size: 16px;
+        }
+
+        /* ------------------------------------ */
+        /*            CRT SCANLINES             */
+        /* ------------------------------------ */
+        .crt-overlay {
+            pointer-events: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9992;
+
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(255,255,255,0.04) 0px,
+                rgba(255,255,255,0.04) 1px,
+                rgba(0,0,0,0) 2px,
+                rgba(0,0,0,0) 4px
+            );
+        }
+    </style>
+</head>
+
+<body>
+    <div class="curve-overlay"></div>
+    <div class="crt-overlay"></div>
+
+    <div class="content">
+        <!-- Your content here -->
+        <h1>About Me</h1>
+    </div>
+
+</body>
+</html>
+
