@@ -139,32 +139,6 @@ html,body { height:100%; margin:0; background:var(--bg); color:var(--text); font
    =========================
    Stronger but safe: ghosts sit underneath content using mix-blend-mode: screen
 */
-body::before,
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9990;
-  mix-blend-mode: screen;
-  opacity: 0.18;
-  filter: blur(1.5px) saturate(110%);
-}
-
-/* blue left */
-body::before {
-  background: linear-gradient(90deg, rgba(0,160,255,0.18) 0%, rgba(0,0,0,0.0) 40%);
-  transform: translateX(-4px);
-}
-
-/* red right */
-body::after {
-  background: linear-gradient(90deg, rgba(255,60,60,0.16) 60%, rgba(0,0,0,0.0) 100%);
-  transform: translateX(4px);
-}
-
-/* content layering: ensure page remains above aberration visuals */
-.page { z-index: 10010; }
 
 /* =========================
    CURVED 'GLASS' REFLECTION
@@ -306,3 +280,4 @@ body::after {
 </script>
 </body>
 </html>
+
